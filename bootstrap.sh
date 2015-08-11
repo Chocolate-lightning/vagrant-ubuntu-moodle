@@ -42,16 +42,16 @@ apt-get -y install php5 \
                    php5-intl \
                    php5-json \
                    php5-mcrypt \
-                   php5-xhprof \ > /dev/null 2>&1
+                   php5-xhprof > /dev/null 2>&1
 
 # Install MySQL.
 echo "mysql-server-5.5 mysql-server/root_password password $MYROOTPASS" | debconf-set-selections
 echo "mysql-server-5.5 mysql-server/root_password_again password $MYROOTPASS" | debconf-set-selections
 apt-get -y install mysql-server-5.5 \
-                   php5-mysql \ > /dev/null 2>&1
+                   php5-mysql > /dev/null 2>&1
 # Rename MySQL root user to keep simple.
-echo "UPDATE mysql.user set user = '${MYROOTUSER}' where user = 'root'" | mysql -u $MYROOTUSER -p$MYROOTPASS
-echo "FLUSH PRIVILEGES" | mysql -u $MYROOTUSER -p$MYROOTPASS
+echo "UPDATE mysql.user set user = '${MYROOTUSER}' where user = 'root'" | mysql -u root -p$MYROOTPASS
+echo "FLUSH PRIVILEGES" | mysql -u root -p$MYROOTPASS
 
 # Check if Moodle database exists.
 if [ mysql -u $MYROOTUSER -p$MYROOTPASS -e "USE ${DBNAME}" > /dev/null 2>&1 ]; then
