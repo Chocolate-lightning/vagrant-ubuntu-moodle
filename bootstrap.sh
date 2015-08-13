@@ -30,7 +30,7 @@ fi
 
 # Copy custom Apache2 site config over.
 cp -f /vagrant/config/000-default.conf /etc/apache2/sites-enabled/
-echo "ServerName localhost" | sudo tee /etc/apache2/conf-available/servername.conf
+echo "ServerName localhost" | sudo tee /etc/apache2/conf-available/servername.conf # TODO broken
 service apache2 reload > /dev/null 2>&1
 # Install any PHP and required modules.
 apt-get -y install php5 \
@@ -42,7 +42,12 @@ apt-get -y install php5 \
                    php5-intl \
                    php5-json \
                    php5-mcrypt \
-                   php5-xhprof > /dev/null 2>&1
+                   php5-dev > /dev/null 2>&1
+# PHP Profiling
+pecl install -f xhprof > /dev/null 2>&1
+php5enmod xhprof > /dev/null 2>&1
+apt-get -y install graphviz > /dev/null 2>&1
+# TODO need to set /usr/bin/dot in config.php
 
 # Install MySQL.
 echo "mysql-server-5.5 mysql-server/root_password password $MYROOTPASS" | debconf-set-selections
