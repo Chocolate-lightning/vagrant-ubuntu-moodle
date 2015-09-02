@@ -78,10 +78,10 @@ apt-get install -y git > /dev/null 2>&1
 # Get sauce.
 GITREPO=git@github.com:moodle/moodle.git
 GITBRANCH=master
-if [ -f config/git.repo ]; then
-    GITREPO=$(<config/git.repo)
-    if [ -f config/git.branch ]; then
-        GITBRANCH=$(<config/git.branch)
+if [ -f /vagrant/config/git.repo ]; then
+    GITREPO=$(</vagrant/config/git.repo)
+    if [ -f /vagrant/config/git.branch ]; then
+        GITBRANCH=$(</vagrant/config/git.branch)
     fi
 fi
 # TODO maynot be github need to do some regex work.
