@@ -45,7 +45,7 @@ apt-get -y install php5 \
                    php5-dev > /dev/null 2>&1
 # PHP Profiling
 pecl install -f xhprof > /dev/null 2>&1
-cp -f /vagrant/config/xhprof.conf /etc/php5/mods-available/
+cp -f /vagrant/config/xhprof.ini /etc/php5/mods-available/
 php5enmod xhprof > /dev/null 2>&1
 apt-get -y install graphviz > /dev/null 2>&1
 # TODO need to set /usr/bin/dot in config.php
