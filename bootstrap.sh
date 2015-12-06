@@ -3,6 +3,14 @@
 MYROOTUSER='mysql'
 MYROOTPASS='mysql'
 
+DBTYPE='mysqli'
+DBHOST='localhost'
+DBNAME='totara'
+DBUSER='totara'
+DBPASS='totara'
+WWWROOT='http://localhost:8080'
+DATAROOT='/data/totara'
+
 # Download and Install the Latest Updates for the OS.
 apt-get update && apt-get upgrade -y
 # Install Apache2.
@@ -44,7 +52,40 @@ apt-get -y install mysql-server-5.5 \
 echo "UPDATE mysql.user set user = '${MYROOTUSER}' where user = 'root'" | mysql -u root -p$MYROOTPASS
 echo "FLUSH PRIVILEGES" | mysql -u root -p$MYROOTPASS
 
+# Check if database exists.
+if [ mysql -u $MYROOTUSER -p$MYROOTPASS -e "USE ${DBNAME}" > /dev/null 2>&1 ]; then
+    echo Error : Detected existing  database, exiting
+    exit 1
+else
+    echo OK : No Totara database, I\'m OK to go...
+    #echo "DROP DATABASE IF EXISTS ${DBNAME}" | mysql -u $MYROOTUSER -p$MYROOTPASS
+    echo "CREATE DATABASE ${DBNAME} DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci" | mysql -u $MYROOTUSER -p$MYROOTPASS
+    echo "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, CREATE TEMPORARY TABLES,
+          DROP, INDEX, ALTER ON ${DBNAME}.* TO ${DBUSER}@localhost IDENTIFIED BY '${DBPASS}'" | mysql -u $MYROOTUSER -p$MYROOTPASS
+    echo "FLUSH PRIVILEGES" | mysql -u $MYROOTUSER -p$MYROOTPASS
+    echo OK : ${DBNAME} database created yo
+fi
+
+service apache2 reload > /dev/null 2>&1
+
+if [ ! -d "$DATAROOT" ]; then
+  mkdir -p $DATAROOT
+  chmod -R 777 $DATAROOT
+fi
+
+# TODO change hard coding.
+cp -f /vagrant/config/config.php /vagrant/totara/
+chmod o+r /vagrant/totara/config.php
+sed -i "s|{{dbtype}}|${DBTYPE}|" /vagrant/totara/config.php
+sed -i "s|{{dbhost}}|${DBHOST}|" /vagrant/totara/config.php
+sed -i "s|{{dbname}}|${DBNAME}|" /vagrant/totara/config.php
+sed -i "s|{{dbuser}}|${DBUSER}|" /vagrant/totara/config.php
+sed -i "s|{{dbpass}}|${DBPASS}|" /vagrant/totara/config.php
+sed -i "s|{{wwwroot}}|${WWWROOT}|" /vagrant/totara/config.php
+sed -i "s|{{dataroot}}|${DATAROOT}|" /vagrant/totara/config.php
+
 # Clean up
 apt-get autoclean && apt-get clean
 
 exit 0
+
